@@ -1,0 +1,62 @@
+인텔리제이 설정에서 gradle버전과 JDK버전 잘 맞추기
+
+스프링 부트는 크게 뷰와 컨테이너 이렇게 두 가지로 작동함
+컨테이너가 컨트롤러를 찾고 컨트롤러가 매핑된 url이 호출되면
+해당 메소드와 관련된 방향으로 작업을 처리함
+ex) viewResolver, StringHttpMessageConverter,
+MappingJackson2HttpMessageConverter 등등
+
+@Controller 어노테이션
+해당 Class를 스프링 컨테이너가 컨트롤러로 인식하게끔하는 어노테이션
+
+@GetMapping("url에 포함될 특정 문자열")
+url에 포함될 값에 객체를 할당시켜서 컨트롤러에게 방향을 제시
+ex) locallhost:8080/hello 여기서 hello를 말하는 것
+
+컨트롤러가 매핑된 객체에서 모델 어트리뷰트로 값을 지정하면
+뷰에서 thymeleaf템플릿에서 제공하는 메소드자리에 넣어준다.
+
+cmd창에서 빌드하고 실행하기
+./gradlew build
+2. cd build/libs
+3. java -jar hello-spring-0.0.1-SNAPSHOT.jar
+
+1.gradlew.bat build or gradlew build
+2. cd build/libs
+3. java -jar hello-spring-0.0.1-SNAPSHOT.jar
+
+*에러발생시 clean build명령으로 빌드해보기
+
+정적 뷰의 경우 static 폴더에 생성하고
+
+컨트롤러 없이 바로 화면에 출력됨
+컨테이너가 컨트롤러를 호출해 이 주소로 매핑된 객체가 있는지 확인
+없기때문에 정적뷰탭을 확인 찾은 html파일을 그대로 페이지에 출력
+
+@RequestParam(변수명)
+url에 매핑된 문자열 뒤로 ?변수명=값 형태로 값이
+주어지는것을 선언하는 어노테이션
+* 객체선언 부에서 선언
+* 어노테이션으로 파라미터 선언 후 변수 선언도 해줘야 메소드에서 사용할 수 있음
+위에서 직접 문자열을 모델 어트리뷰트에 넣어서 모델를 뷰 리졸버로 넘겨주듯이
+url의 파라미터가 가지는 해시맵 형태의 값을 [ex){name:"Spring"}]
+모델 어트리뷰트형태로 뷰 리졸버로 넘겨서 thymleaf메소드에 뿌려주는 방식
+
+(API방식)
+@ResponseBody
+컨트롤러가 해당 url정보를 가진 객체를 호출했을때
+위의 어노테이션이 붙어있으면 리턴된 값이 객체인지 문자열인지에 따라
+뷰리졸버대신에
+[문자열]
+StringHttpMessageConverter가 호출되어 모델 어트리뷰트에 있는 문자열을
+문자열 그대로 페지에 출력 (html형태 X)
+
+[객체]
+MappingJackson2HttpMessageConverter가 호출되어 객체를 JSON형태로 변환해
+페이지에 출력
+
+서버와 클라이언트가 소통하는 경우엔 위의 방식으로 페이지에 출력해주는 흐름이지만
+서버와 서버가 값을 교환하는 경우 JSON형태로 값을 교환 -> RestAPI방식
+
+동시성 문제
+ConcurrentHashMap, AtomicLong
