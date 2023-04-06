@@ -45,6 +45,7 @@ public class MemoryMemberRepository implements MemberRepository{
     @Override
     public List<Member> findAll() {
         return new ArrayList<>(store.values());
+        //해시맵의 values는 객체들 전부이다 이를 ArrayList형태로 리턴해준다.
     }
 
     public void cleatStore(){

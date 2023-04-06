@@ -6,7 +6,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -17,6 +16,7 @@ public class MemoryMemberRepositoryTest {
     @AfterEach
     public void affterEach(){
         repository.cleatStore();
+        // store.clear()를 호출해 repository값을 clear해준다.
     }
     @Test
     public void save(){
@@ -27,6 +27,10 @@ public class MemoryMemberRepositoryTest {
 
         Member result = repository.findById(member.getId()).get();
         assertThat(member).isEqualTo(result);
+
+        // 위에서 구현해준 Spring이라는 이름을 가진 객체의 id를 찾아서
+        // 그 id의 객체가 위에 선언한 객체가 맞는지 확인
+        // 지금은 간단한 기능이어서 2+2+2가 2*3이 맞는지 확인하는 꼴
 
     }
 
@@ -61,7 +65,12 @@ public class MemoryMemberRepositoryTest {
         repository.save(member3);
 
         List<Member> result = repository.findAll();
+        // 위의 생성한 초소형 DB의 의 내용물들을 ArrayList형태로 반환받아서
+        // List<Member>형의 result에 저장
 
         assertThat(result.size()).isEqualTo(3);
+        //result의 size는 곧 초소형 DB의 Member객체의 개수
+        // 위에서 3개를 만들어서 넣어 주었으니까 3과 비교해서
+        // 맞으면 True -> Success
     }
 }
