@@ -13,8 +13,9 @@ public class MemoryMemberRepositoryTest {
 
     MemoryMemberRepository repository = new MemoryMemberRepository();
 
+    // 테스트 구현체 메소드가 실행될 때 마다 그 후에
     @AfterEach
-    public void affterEach(){
+    public void afterEach(){
         repository.cleatStore();
         // store.clear()를 호출해 repository값을 clear해준다.
     }
