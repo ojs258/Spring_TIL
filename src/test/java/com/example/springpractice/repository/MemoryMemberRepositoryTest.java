@@ -1,7 +1,6 @@
 package com.example.springpractice.repository;
 
 import com.example.springpractice.domain.Member;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +15,7 @@ public class MemoryMemberRepositoryTest {
     // 테스트 구현체 메소드가 실행될 때 마다 그 후에
     @AfterEach
     public void afterEach(){
-        repository.cleatStore();
+        repository.clearStore();
         // store.clear()를 호출해 repository값을 clear해준다.
     }
     @Test

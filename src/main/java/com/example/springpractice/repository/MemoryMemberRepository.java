@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * 동시성 문제가 고려되어 있지 않음, 실무에서는 ConcurrentHashMap, AtomicLong 사용 고려
  */
-
+//@Repository
 public class MemoryMemberRepository implements MemberRepository{
     private static Map<Long, Member> store = new HashMap<>();
     private static long sequence = 0L;
@@ -48,7 +48,7 @@ public class MemoryMemberRepository implements MemberRepository{
         //해시맵의 values는 객체들 전부이다 이를 ArrayList형태로 리턴해준다.
     }
 
-    public void cleatStore(){
+    public void clearStore(){
         store.clear();
     }
 }

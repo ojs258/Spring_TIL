@@ -1,41 +1,32 @@
 package com.example.springpractice.Service;
 
 import com.example.springpractice.domain.Member;
+import com.example.springpractice.repository.MemberRepository;
 import com.example.springpractice.repository.MemoryMemberRepository;
 import com.example.springpractice.repository.MemoryMemberRepositoryTest;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class MemberServiceTest {
+@SpringBootTest
+@Transactional
+class MemberServiceIntegtationTest {
 
-    MemberService memberService;
-    MemoryMemberRepository memberRepository;
-
-    @BeforeEach
-    // DI로 구현되어있는 상위 class에 하위 class인 테스트 구현체에서
-    // 메소드가 실행 될 때마다 객체를 생성해서 주입해주는 형태
-    public void beforeEach(){
-        memberRepository = new MemoryMemberRepository();
-        memberService = new MemberService(memberRepository);
-    }
-
-    // 테스트 구현체 메소드가 실행될 때 마다 그 후에
-    @AfterEach
-    public void afterEach(){
-        memberRepository.clearStore();
-        // store.clear()를 호출해 repository값을 clear해준다.
-    }
+    @Autowired MemberService memberService;
+    @Autowired MemberRepository memberRepository;
 
     @Test
     void 회원가입() {
         //given
         Member member = new Member();
-        member.setName("hello");
-        //hello라는 이름을 가진 멤버 객체를 하나 생성
+        member.setName("testSpring");
+        //testSpring이라는 이름을 가진 멤버 객체를 하나 생성
 
         //when
         Long saveId = memberService.join(member);
@@ -81,13 +72,5 @@ class MemberServiceTest {
         */
 
 
-    }
-
-    @Test
-    void findAll() {
-    }
-
-    @Test
-    void findOne() {
     }
 }
