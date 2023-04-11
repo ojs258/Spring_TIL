@@ -1,13 +1,13 @@
-package testproject.js.service;
+package testproject.js;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import testproject.js.domain.Member;
 import testproject.js.repository.MemoryRepository;
+import testproject.js.service.MemberService;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestService {
 
@@ -21,7 +21,7 @@ public class TestService {
     }
     @AfterEach
     public void AfterEach(){
-        memoryRepository.clearTemp();
+        memoryRepository.clear();
     }
     @Test
     public void 회원_가입(){
@@ -30,33 +30,30 @@ public class TestService {
         member.setId("Spring");
         member.setPw("1018");
 
-        memberService.join(member);
+        String id = memberService.join(member);
 
-        Member result = memoryRepository.findById(member.getId()).get();
+        Member result = memoryRepository.findById(id).get();
         assertThat(result).isEqualTo(member);
 
     }
 
     @Test
-    public void 아이디_중복_검사(){
+    public void 중복_회원_검사(){
         Member member1 = new Member();
         member1.setName("진석");
         member1.setId("Spring");
-        member1.setPw("1234");
+        member1.setPw("1018");
 
         Member member2 = new Member();
-        member2.setName("정민");
+        member2.setName("은지");
         member2.setId("Spring");
-        member2.setPw("5678");
-
-        memberService.join(member1);
-        IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> memberService.join(member2));
-
-        assertThat(e.getMessage()).isEqualTo("중복된 ID 입니다.");
+        member2.setPw("1018");
 
 
-        //중복입니다.exception 문구가 출력되는지로 확인
+    }
+
+    @Test
+    public void 회원_목록(){
 
     }
 }

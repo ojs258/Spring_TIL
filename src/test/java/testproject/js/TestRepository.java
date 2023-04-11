@@ -15,7 +15,7 @@ public class TestRepository{
 
     @AfterEach
     public void afterEach() {
-        repository.clearTemp();
+        repository.clear();
     }
     @Test
     public void save_findById() {

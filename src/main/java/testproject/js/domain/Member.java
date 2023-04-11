@@ -5,11 +5,11 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Member {
-
+    String name;
     @Id
     String id;
     String pw;
-    String name;
+
     public String getName() {
         return name;
     }
