@@ -9,11 +9,12 @@ public class MemoryMemberRepository implements MemberRepository{
 
     @Override
     public void save(Member member) {
-
+        store.put(member.getId(), member);
     }
 
     @Override
-    public Member finById(Long memberId) {
-        return null;
+    public Member findById(Long memberId) {
+
+        return store.get(memberId);
     }
 }
