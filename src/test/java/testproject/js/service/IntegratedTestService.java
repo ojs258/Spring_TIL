@@ -19,9 +19,6 @@ public class IntegratedTestService {
 
     @Autowired
     MemberService memberService;
-    @Autowired
-    MemberRepository memberRepository;
-
 
     @Test
     public void 회원_가입(){
