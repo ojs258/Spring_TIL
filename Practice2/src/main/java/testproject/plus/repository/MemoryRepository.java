@@ -14,7 +14,7 @@ public class MemoryRepository implements MemberRepository{
     @Override
     public Member save(Member member) {
         store.put(member.getId(), member);
-        return null;
+        return store.get(member.getId());
     }
 
     @Override
@@ -23,13 +23,18 @@ public class MemoryRepository implements MemberRepository{
     }
 
     @Override
-    public Member delete(String id) {
+    public List<Member> delete(String id) {
         store.remove(id);
-        return null;
+        return findAll();
     }
 
     @Override
-    public List<Member> findAll(Member member) {
+    public List<Member> findAll() {
         return new ArrayList<Member>(store.values());
+    }
+
+    @Override
+    public void storeClear(){
+        store.clear();
     }
 }

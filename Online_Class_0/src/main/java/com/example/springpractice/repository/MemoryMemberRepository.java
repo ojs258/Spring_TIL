@@ -26,7 +26,7 @@ public class MemoryMemberRepository implements MemberRepository{
 
     @Override
     public Optional<Member> findById(Long id) {
-        return  Optional.ofNullable(store.get(id));
+        return Optional.ofNullable(store.get(id));
         //해시맵의 key인 id를통해 회원정보를 가져오는 흐름
     }
 
