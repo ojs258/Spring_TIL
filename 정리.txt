@@ -47,7 +47,8 @@ url의 파라미터가 가지는 해시맵 형태의 값을 [ex){name:"Spring"}]
 @ResponseBody
 컨트롤러가 해당 url정보를 가진 객체를 호출했을때
 위의 어노테이션이 붙어있으면 리턴된 값이 객체인지 문자열인지에 따라
-뷰리졸버대신에
+뷰리졸버대신에 다른 기능을하는 컨버터 등을 호출함
+
 [문자열]
 StringHttpMessageConverter가 호출되어 모델 어트리뷰트에 있는 문자열을
 문자열 그대로 페지에 출력 (html형태 X)
@@ -62,8 +63,10 @@ MappingJackson2HttpMessageConverter가 호출되어 객체를 JSON형태로 변�
 회원 등록 기능 구현
 회원 객체(Member.class)
  ㄴ회원이 가지게 될 정보의 종류 ex) id, name 등.. 을 구현
+
 회원 리포지토리 인터페이스(MemberRepository.interface)
  ㄴ추상 메소드들로 일단 구현 원래 DB연결부가 들어가는 부분
+
 회원 리포지토리 메모리 구현체(MemoryMemberRepository)
  ㄴ 인터페이스에 구현된 추상 메소드 들을 implements해서
     서비스들은 구현 마찬가지로 원래 DB연결부가 들어가는 부분

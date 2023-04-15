@@ -82,12 +82,4 @@ class MemberServiceTest {
 
 
     }
-
-    @Test
-    void findAll() {
-    }
-
-    @Test
-    void findOne() {
-    }
 }
