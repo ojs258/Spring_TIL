@@ -7,6 +7,11 @@ public class LoginMember {
     private String id;
     private String pw;
 
+    public LoginMember(String id, String pw) {
+        this.id = id;
+        this.pw = pw;
+    }
+
     public String getId() {
         return id;
     }

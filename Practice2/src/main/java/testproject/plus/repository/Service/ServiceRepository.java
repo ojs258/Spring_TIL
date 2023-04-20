@@ -1,12 +1,10 @@
 package testproject.plus.repository.Service;
 
-import org.springframework.boot.web.server.Cookie;
 import testproject.plus.domain.LoginMember;
 import testproject.plus.domain.Member;
 import testproject.plus.repository.MemberRepository;
 import testproject.plus.repository.MemoryRepository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,11 +12,11 @@ public class ServiceRepository {
 
     MemberRepository memberRepository = new MemoryRepository();
 
-    public Member joinMember(Member member){
+    public Optional<Member> joinMember(Member member){
 
         duplicationCheck(member);
         Member joinMem = memberRepository.save(member);
-        return joinMem;
+        return Optional.of(joinMem);
     }
 
     public void duplicationCheck(Member member){
@@ -28,21 +26,13 @@ public class ServiceRepository {
                 });
     }
 
-    public String delMember(String id){
-        memberRepository.delete(id);
-        return "삭제되었습니다.";
+    public List<Member> delMember(String id){
+        return memberRepository.delete(id);
     }
     public List<Member> listMember(){
         return memberRepository.findAll();
     }
-    public HashMap<String, String> loginMember(LoginMember lMember) {
-        HashMap<String, String> resultMember = new HashMap<>();
-        Optional<Member> member = memberRepository.findById(lMember.getId());
-        if (lMember.getPw().equals(member.get().getPw())){
-            resultMember.put(member.get().getId(),"로그인 성공");
-        }else {
-            resultMember.put(member.get().getId(), "로그인 실패");
-        }
-        return resultMember;
+    public Optional<Member> loginMember(LoginMember lMember) {
+        return memberRepository.findById(lMember.getId());
     }
 }
