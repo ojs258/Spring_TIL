@@ -3,8 +3,10 @@ package testproject.plus.Controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import testproject.plus.domain.LoginMember;
 import testproject.plus.domain.Member;
 import testproject.plus.repository.Service.ServiceRepository;
@@ -17,14 +19,16 @@ public class MemberController {
     ServiceRepository serviceRepository = new ServiceRepository();
 
     @GetMapping("/joinMember")
-    public String JoinMember(){
+    public String JoinMember() {
         return "member/createMemberForm";
     }
+
     @PostMapping("/joinMember")
-    public String Join(Member member){
+    public String Join(Member member) {
         serviceRepository.joinMember(member);
         return "redirect:/";
     }
+
     @GetMapping("/listMember")
     public String List(Model model){
         List<Member> members = serviceRepository.listMember();

@@ -22,6 +22,7 @@ public class MemberController {
     public String signUpFrom(){
         return "member/createMember";
     }
+
     @PostMapping("/member/sign-up")
     public String signUp(MemberForm form){
         Member member = new Member();

@@ -1,13 +1,17 @@
 package testproject.js.repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import testproject.js.domain.Member;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class JpaMemberRepository implements MemberRepository{
 
+    @Autowired
     private final EntityManager em;
 
     public JpaMemberRepository(EntityManager em) {
