@@ -53,6 +53,7 @@ public class Order {
     }
 
     @Override
+    //객체 자체를 출력하면 아래 메소드가 호출되어 문자열로 출력됨
     public String toString() {
         return "Order{" +
                 "memberId=" + memberId +
