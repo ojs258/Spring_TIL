@@ -31,4 +31,9 @@ public class OrderServiceImpl implements OrderService{
         // 회원 정보와 할인 정책을 통해 구한 할인 될 금액과
         // 입력받은 정보를 함께 하나의 주문이라는 객체로 만들어서 리턴해줌
     }
+
+    //테스트용
+    public MemberRepository getMemberRepository(){
+        return memberRepository;
+    }
 }

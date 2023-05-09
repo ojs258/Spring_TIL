@@ -16,8 +16,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 // 어셈블러, 오브젝트 팩토리 역할을하는 구성정보 파일임을 명시하는 어노테이션
 public class AppConfig {
-    @Bean // 빈의 이름은 관례상 메소드의 이름으로 설정됨 @Bean(이름)dmfh 설정해 줄 수도 있음.
-    public static MemberRepository memberRepository() {
+
+    // @Bean memberService -> new MemoryMemberRepository()
+    // @Bean orderService -> new MemoryMemberRepository()
+
+    @Bean // 빈의 이름은 관례상 메소드의 이름으로 설정됨 @Bean(이름)으로 설정해 줄 수도 있음.
+    public MemberRepository memberRepository() {
+        System.out.println("AppConfig.memberRepository");
         return new MemoryMemberRepository();
     }
     @Bean
@@ -27,10 +32,12 @@ public class AppConfig {
     }
     @Bean
     public MemberService memberService(){
+        System.out.println("AppConfig.memberService");
         return new MemberServiceImpl(memberRepository());
     }
     @Bean
     public OrderService orderService() {
+        System.out.println("AppConfig.orderService");
         return new OrderServiceImpl(memberRepository(), discountPolicy());
     }
 }
