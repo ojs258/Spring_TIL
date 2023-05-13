@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CrawlingTestApplication {
 	public static void main(String[] args) {
 		crawlingBean crawlingBean = new crawlingBean();
-		crawlingBean.startSelenium();
+		crawlingBean.startJsoup();
 		//crawlingBean.startSelenium();
 		//SpringApplication.run(CrawlingTestApplication.class, args);
 	}
