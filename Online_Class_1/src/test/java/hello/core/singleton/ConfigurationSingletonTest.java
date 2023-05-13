@@ -31,4 +31,14 @@ public class ConfigurationSingletonTest {
         Assertions.assertThat(memberRepository2).isSameAs(memberRepository);
 
     }
+
+    @Test
+    void ConfigurationDeep(){
+        ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
+        AppConfig bean = ac.getBean(AppConfig.class);
+
+        System.out.println("bean = " + bean.getClass());
+    }
+    // 부모 타입으로 전체 조회 개념을 이용해 숨겨진 SpringCGLIB인스턴스를 출력
+
 }
