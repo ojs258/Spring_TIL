@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CreateMember</title>
+</head>
+<body>
+<div class="container">
+    <form action="/member/sign-up" method="post">
+        <div class="form-group">
+            <table>
+                <th colspan="2"><h2>회원가입</h2></th>
+                <tr style="text-align:right">
+                    <td><label for="name">NM</label></td>
+                    <td><input type="text" id="name" name="name" placeholder="이름을 입력하세요"></td>
+                </tr>
+                <tr style="text-align:right">
+                    <td><label for="id" >ID</label></td>
+                    <td><input type="text" id="id" name="id" placeholder="ID를 입력하세요"></td>
+                </tr>
+                <tr style="text-align:right">
+                    <td><label for="pw" >PW</label></td>
+                    <td><input type="text" id="pw" name="pw" placeholder="PW를 입력하세요"></td>
+                </tr>
+            </table>
+        </div>
+        <button type="submit">가입</button>
+    </form>
+</div>
+</body>
+</html>
