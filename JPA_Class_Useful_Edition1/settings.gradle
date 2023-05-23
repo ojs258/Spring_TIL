@@ -1,1 +1,5 @@
 rootProject.name = 'jpashop'
+include 'JPA'
+include 'JPA'
+include 'untitled'
+
