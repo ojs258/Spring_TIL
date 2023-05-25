@@ -21,23 +21,13 @@ public class crawlingBean {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Element crdiv = doc.getElementsByClass("main-box main-top").get(0);
+        Elements crdiv = doc.getElementsByClass("main-box main-top");
 
-        System.out.println(crdiv.text());
+        System.out.println(crdiv);
     }
-//    private WebDriver driver;
-//    public void startSelenium(){
-//        System.setProperty("webdriver.chrome.driver","C:\\dev\\chromedriver_win32\\chromedriver.exe");
-//        ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--remote-allow-origins=*");
-//        driver = new ChromeDriver(options);
-//        driver.get(url);
-//        List<WebElement> elements = driver.findElements(By.cssSelector(".thumbinner"));
-//
-//        for(WebElement element : elements){
-//            System.out.println("---------------");
-//            System.out.println(element.getText());
-//        }
-//        //driver.quit();
-//    }
+    public static void main(String[] args) {
+        crawlingBean crawlingBean = new crawlingBean();
+        crawlingBean.startJsoup();
+    }
 }
+
