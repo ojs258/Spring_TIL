@@ -18,7 +18,7 @@ public class Member {
 
     private String name;
 
-    @Embedded
+    @Embedded // 어떤 객체가 지금 필드와 매핑하여 내장되게 하는 기능
     private Address address;
 
     @OneToMany(mappedBy = "member") // 객체로 구성하는 연관관계에서 손님 객체로 인식하게하는 옵션
