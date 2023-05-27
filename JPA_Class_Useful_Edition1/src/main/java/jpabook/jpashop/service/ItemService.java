@@ -1,6 +1,6 @@
 package jpabook.jpashop.service;
 
-import ch.qos.logback.core.sift.AppenderFactoryUsingSiftModel;
+import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class itemService {
+public class ItemService {
 
     private final ItemRepository itemRepository;
 
@@ -21,7 +21,14 @@ public class itemService {
         itemRepository.save(item);
     }
 
-    public List<Item> findItems(Item item){
+    @Transactional
+    public void updateItem(Long itemId, String name, int price ) {
+        Item findItem = itemRepository.findOne(itemId);
+        findItem.setPrice(price);
+        findItem.setName(name);
+    }
+
+    public List<Item> findItems(){
         return itemRepository.findAll();
     }
 
