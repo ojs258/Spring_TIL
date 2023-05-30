@@ -1,6 +1,7 @@
 package jpabook.jpashop.domain.member;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jpabook.jpashop.domain.order.Order;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class Member {
     @Column(name="member_Id")
     private Long id;
 
+    @NotEmpty
     private String name;
 
     @Embedded // 어떤 객체가 지금 필드와 매핑하여 내장되게 하는 기능
