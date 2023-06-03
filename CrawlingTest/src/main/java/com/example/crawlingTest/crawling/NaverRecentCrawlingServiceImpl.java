@@ -5,42 +5,43 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class NaverCrawlingServiceImpl implements CrawlingService{
+public class NaverRecentCrawlingServiceImpl implements CrawlingService{
 
-    String keyword = null;
-
+    RecentNewsFilter rnf = new RecentNewsFilter(); // 최신뉴스
     @Override
-    public List<String> crawling() {
+    public List<String> crawling() { // 가져온 검색 기록을 서로 비교하여 공통된 부분만 추려내는 부분
 
+        String apiUrl = makeApiUrl();
+        String responseBody = get(apiUrl);
+//        responseBody;
+        return null;
+    }
+    private String makeApiUrl(){ // 유저가 최신 선택한 카테고리 해당하는 뉴스를 가져오는 부분
+        String keyword = null;
         try {
-            keyword = URLEncoder.encode("대학생", "UTF-8");
+            keyword = URLEncoder.encode(rnf.getCategory(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("검색어 인코딩 실패",e);
         }
+        
+        String query = "?query=" + keyword;
+        String display = "&display=10"; //
+        String start = "&start=1"; // 정렬 후 몇번째
+        String sort = "&sort=sim"; //sim -> 검색어 정확도순서 정렬(내림차순), date -> 검색어 날자순 정렬(내림차순)
+        String apiUrl = "https://openapi.naver.com/v1/search/news.json" + query + display + start + sort;
 
-        String apiUrl = "https://openapi.naver.com/v1/search/news?query=" + keyword;
-
-        Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("X-Naver-Client-Id", "q7T37qBLF0PdgAjo97uG");
-        requestHeaders.put("X-Naver-Client-Secret", "vUhKjp4hYs");
-        String responseBody = get(apiUrl, requestHeaders);
-
-
-        System.out.println(responseBody);
-        return null;
+        return apiUrl;
     }
 
-    private String get(String apiUrl, Map<String, String> requestHeaders) {
+    private String get(String apiUrl) {
+
         HttpURLConnection con = connect(apiUrl);
         try {
-            con.setRequestMethod("GET");
-            for(Map.Entry<String, String> header :requestHeaders.entrySet()) {
-                con.setRequestProperty(header.getKey(), header.getValue());
-            }
+            con.setRequestMethod("GET"); // API를 GET방식으로 호출하는것으로 등록
+            con.setRequestProperty("X-Naver-Client-Id","q7T37qBLF0PdgAjo97uG"); // API
+            con.setRequestProperty("X-Naver-Client-Secret","vUhKjp4hYs");
 
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
