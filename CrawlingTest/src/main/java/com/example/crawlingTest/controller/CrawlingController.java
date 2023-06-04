@@ -14,7 +14,11 @@ public class CrawlingController {
     CrawlingService detail = new JsoupCrawlingServiceImpl();
 
     public void sourceCrawling() {
-        source.crawling();
+        List<String> crawlingList = source.crawling();
+        for (String body : crawlingList) {
+            System.out.println("----------1243----------");
+            System.out.println(body);
+        }
     }
     public void detailCrawling(){
 

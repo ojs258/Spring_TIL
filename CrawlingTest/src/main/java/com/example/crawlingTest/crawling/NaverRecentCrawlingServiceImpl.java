@@ -1,10 +1,16 @@
 package com.example.crawlingTest.crawling;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NaverRecentCrawlingServiceImpl implements CrawlingService{
@@ -12,10 +18,12 @@ public class NaverRecentCrawlingServiceImpl implements CrawlingService{
     RecentNewsFilter rnf = new RecentNewsFilter(); // 최신뉴스
     @Override
     public List<String> crawling() { // 가져온 검색 기록을 서로 비교하여 공통된 부분만 추려내는 부분
-
-        String apiUrl = makeApiUrl();
-        String responseBody = get(apiUrl);
-        System.out.println(responseBody);
+        String responseBody = get(makeApiUrl());
+        try {
+            return bodyParsing(responseBody);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return null;
     }
     private String makeApiUrl(){ // 유저가 최신 선택한 카테고리 해당하는 뉴스를 가져오는 부분
@@ -34,6 +42,16 @@ public class NaverRecentCrawlingServiceImpl implements CrawlingService{
 
         return apiUrl;
     }
+    private List<String> bodyParsing(String responseBody) throws ParseException {
+        List<String> bodyList= new ArrayList<>();
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse((responseBody));
+        JSONArray jsonArray = (JSONArray) jsonObject.get("items");
+        for (Object json : jsonArray) {
+            bodyList.add(json.toString());
+        }
+        return bodyList;
+    }
 
     private String get(String apiUrl) {
 
@@ -41,7 +59,7 @@ public class NaverRecentCrawlingServiceImpl implements CrawlingService{
         try {
             con.setRequestMethod("GET"); // API를 GET방식으로 호출하는것으로 등록
             con.setRequestProperty("X-Naver-Client-Id","q7T37qBLF0PdgAjo97uG"); // API 아이디
-            con.setRequestProperty("X-Naver-Client-Secret","******"); // API 시크릿 key
+            con.setRequestProperty("X-Naver-Client-Secret","vUhKjp4hYs"); // API 시크릿 key
 
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
