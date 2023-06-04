@@ -40,7 +40,7 @@ public class NaverSubsCrawlingServiceImpl implements CrawlingService{
         try {
             con.setRequestMethod("GET"); // API를 GET방식으로 호출하는것으로 등록
             con.setRequestProperty("X-Naver-Client-Id","q7T37qBLF0PdgAjo97uG"); // API
-            con.setRequestProperty("X-Naver-Client-Secret","vUhKjp4hYs");
+            con.setRequestProperty("X-Naver-Client-Secret","******");
 
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출

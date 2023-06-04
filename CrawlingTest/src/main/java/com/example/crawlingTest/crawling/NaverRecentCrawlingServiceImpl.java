@@ -15,7 +15,7 @@ public class NaverRecentCrawlingServiceImpl implements CrawlingService{
 
         String apiUrl = makeApiUrl();
         String responseBody = get(apiUrl);
-//        responseBody;
+        System.out.println(responseBody);
         return null;
     }
     private String makeApiUrl(){ // 유저가 최신 선택한 카테고리 해당하는 뉴스를 가져오는 부분
@@ -26,9 +26,9 @@ public class NaverRecentCrawlingServiceImpl implements CrawlingService{
             throw new RuntimeException("검색어 인코딩 실패",e);
         }
         
-        String query = "?query=" + keyword;
-        String display = "&display=10"; //
-        String start = "&start=1"; // 정렬 후 몇번째
+        String query = "?query=" + keyword; // 검색 키워드가 들어가는부분 최신 기사 서비스에서는 카테고리만.
+        String display = "&display=10"; // 몇번째 검색 기록까지 보여줄지 정하는 부분
+        String start = "&start=1"; // 정렬 후 몇 번째 부터 보여줄지 정하는 부분
         String sort = "&sort=sim"; //sim -> 검색어 정확도순서 정렬(내림차순), date -> 검색어 날자순 정렬(내림차순)
         String apiUrl = "https://openapi.naver.com/v1/search/news.json" + query + display + start + sort;
 
@@ -40,8 +40,8 @@ public class NaverRecentCrawlingServiceImpl implements CrawlingService{
         HttpURLConnection con = connect(apiUrl);
         try {
             con.setRequestMethod("GET"); // API를 GET방식으로 호출하는것으로 등록
-            con.setRequestProperty("X-Naver-Client-Id","q7T37qBLF0PdgAjo97uG"); // API
-            con.setRequestProperty("X-Naver-Client-Secret","vUhKjp4hYs");
+            con.setRequestProperty("X-Naver-Client-Id","q7T37qBLF0PdgAjo97uG"); // API 아이디
+            con.setRequestProperty("X-Naver-Client-Secret","******"); // API 시크릿 key
 
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
