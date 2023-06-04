@@ -44,8 +44,9 @@ public class MemberService {
         return memberRepository.findOne(memberId);
     }
 
+    @Transactional // 트랜잭셔널 어노테이션을 통해 JPA가 변동된 내용을 DB 플러쉬 하게끔 한다.
     public void update(Long id, String name) {
-        Member member = memberRepository.findOne(id);
-        member.setName(name);
+        Member member = memberRepository.findOne(id); //DB와 연동되어있는 상태인 Member를 가져와
+        member.setName(name); // 이름을 수정해주고
     }
 }

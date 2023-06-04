@@ -1,5 +1,6 @@
 package jpabook.jpashop.domain.member;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jpabook.jpashop.domain.order.Order;
@@ -23,6 +24,7 @@ public class Member {
     @Embedded // 어떤 객체가 지금 필드와 매핑하여 내장되게 하는 기능
     private Address address;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "member") // 객체로 구성하는 연관관계에서 손님 객체로 인식하게하는 옵션
     private List<Order> orders = new ArrayList<>();
 }
