@@ -42,7 +42,7 @@ public class NaverRecentCrawlingServiceImpl implements CrawlingService{
 
         return apiUrl;
     }
-    private List<String> bodyParsing(String responseBody) throws ParseException {
+    private List<String> bodyParsing(String responseBody) throws ParseException { // Naver검색API를 어댑터 패턴으로 사용하기 위해 API가 리턴한 JSON을 파싱해서 List<Sting>에 담아주는 메소드
         List<String> bodyList= new ArrayList<>();
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse((responseBody));

@@ -16,7 +16,7 @@ public class CrawlingController {
     public void sourceCrawling() {
         List<String> crawlingList = source.crawling();
         for (String body : crawlingList) {
-            System.out.println("----------1243----------");
+            System.out.println("--------------------");
             System.out.println(body);
         }
     }

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class CrawlingTestApplication {
 	public static void main(String[] args) {
-		CrawlingController cc = new CrawlingController();
-		cc.sourceCrawling();
+		CrawlingController controller = new CrawlingController();
+		controller.sourceCrawling();
 	}
 }
