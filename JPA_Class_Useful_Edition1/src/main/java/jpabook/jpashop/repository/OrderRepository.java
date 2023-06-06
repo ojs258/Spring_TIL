@@ -5,7 +5,9 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import jpabook.jpashop.domain.member.Member;
 import jpabook.jpashop.domain.order.Order;
+import jpabook.jpashop.domain.order.OrderItem;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -31,6 +33,18 @@ public class OrderRepository {
                                     .getResultList();
         return resultList;
     }
+    public List<Order> findAllWithMD() {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m"+
+                        " join fetch o.delivery d", Order.class
+                ).getResultList();
+    }
+
+//    public List<OrderItem> fullFindAll() {
+//        return em.createQuery("select oi from OrderItem oi ", OrderItem.class)
+//                .getResultList();
+//    }
     public List<Order> findAllByCriteria(OrderSearch orderSearch) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Order> cq = cb.createQuery(Order.class);

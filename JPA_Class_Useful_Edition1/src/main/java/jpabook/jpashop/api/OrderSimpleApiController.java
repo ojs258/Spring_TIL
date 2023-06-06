@@ -5,10 +5,10 @@ import jpabook.jpashop.domain.order.Order;
 import jpabook.jpashop.domain.order.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.SimpleOrderQueryDto;
+import jpabook.jpashop.repository.orderSimpleQueryDto;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.atn.SemanticContext;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,32 +33,46 @@ public class OrderSimpleApiController {
         return all;
     }
 
-
-
     @GetMapping("/api/v2/simple-orders")
-    public List<SimpleOrderDTO> ordersV2() {
-        List<Order> orders = orderRepository.findAllByCriteria(new OrderSearch());
-        List<SimpleOrderDTO> result = orders.stream()
-                .map(o -> new SimpleOrderDTO(o))
+    public List<SimpleOrderDto> ordersV2() {
+        List<Order> orders = orderRepository.findAll();
+        List<SimpleOrderDto> result = orders.stream()
+                .map(o -> new SimpleOrderDto(o))
+                .collect(toList());
+
+        return result;
+    }
+
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithMD();
+        List<SimpleOrderDto> result = orders.stream()
+                .map(o -> new SimpleOrderDto(o))
                 .collect(toList());
 
         return result;
     }
 
     @Data
-    private class SimpleOrderDTO {
+    private class SimpleOrderDto {
         private Long orderId;
         private String name;
         private LocalDateTime orderDate;
         private OrderStatus orderStatus;
         private Address address;
 
-        public SimpleOrderDTO(Order order) {
+        public SimpleOrderDto(Order order) {
+
             orderId = order.getId();
             name = order.getMember().getName(); // LAZY 초기화
-            orderDate = order.getOrderDate();
+            orderDate = order.getOrderDate();;
             orderStatus = order.getStatus();
             address = order.getDelivery().getAddress(); // LAZY 초기화
         }
+    }
+
+    @GetMapping("/api/v4/simple-orders")
+    public List<SimpleOrderQueryDto> ordersV4() {
+        return SimpleOrderQueryDto.findOrderDtos;
     }
 }
