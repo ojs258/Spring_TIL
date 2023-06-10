@@ -46,7 +46,7 @@ public class OrderApiController {
 
     @GetMapping("/api/v2/orders")
     public List<OrderDto> orderV2() {
-        List<OrderDto> result = orderRepository.findAll().stream()
+        List<OrderDto> result = orderRepository.findAll(new OrderSearch()).stream()
                 .map(OrderDto::new)
                 .collect(toList());
 

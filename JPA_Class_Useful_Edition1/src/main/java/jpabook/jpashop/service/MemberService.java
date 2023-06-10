@@ -2,9 +2,7 @@ package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.member.Member;
 import jpabook.jpashop.repository.MemberRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,12 +39,12 @@ public class MemberService {
     }
 
     public Member findOne(Long memberId){
-        return memberRepository.findOne(memberId);
+        return memberRepository.findById(memberId).get();
     }
 
     @Transactional // 트랜잭셔널 어노테이션을 통해 JPA가 변동된 내용을 DB 플러쉬 하게끔 한다.
     public void update(Long id, String name) {
-        Member member = memberRepository.findOne(id); //DB와 연동되어있는 상태인 Member를 가져와
+        Member member = memberRepository.findById(id).get(); //DB와 연동되어있는 상태인 Member를 가져와
         member.setName(name); // 이름을 수정해주고
     }
 }

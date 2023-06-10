@@ -1,10 +1,15 @@
 package jpabook.jpashop.repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import jpabook.jpashop.domain.member.Member;
+import jpabook.jpashop.domain.member.QMember;
 import jpabook.jpashop.domain.order.Order;
+import jpabook.jpashop.domain.order.OrderStatus;
+import jpabook.jpashop.domain.order.QOrder;
 import jpabook.jpashop.repository.order.OrderSimpleQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -28,10 +33,31 @@ public class OrderRepository {
     public Order findOne(Long id){
         return em.find(Order.class, id);
     }
-    public List<Order> findAll() {
-        List<Order> resultList = em.createQuery("select o from Order o ", Order.class)
-                                    .getResultList();
-        return resultList;
+    public List<Order> findAll(OrderSearch orderSearch) {
+        QOrder order = QOrder.order;
+        QMember member = QMember.member;
+
+        JPAQueryFactory qf = new JPAQueryFactory(em);
+        return qf.select(order)
+                .from(order)
+                .join(order.member, member)
+                .where(statusEq(orderSearch.getOrderStatus()), nameLike(orderSearch, member))
+                .limit(1000)
+                .fetch();
+    }
+
+    private BooleanExpression nameLike(OrderSearch orderSearch, QMember member) {
+        if (StringUtils.hasText(orderSearch.getMemberName())){
+            return null;
+        }
+        return member.name.like(orderSearch.getMemberName());
+    }
+
+    private BooleanExpression statusEq(OrderStatus orderStatus) {
+        if (orderStatus == null) {
+            return null;
+        }
+        return QOrder.order.status.eq(orderStatus);
     }
     public List<Order> findAllWithMD() {
         return em.createQuery(
@@ -90,4 +116,5 @@ public class OrderRepository {
                         " join fetch oi.item i", Order.class)
                 .getResultList();
     }
+
 }
