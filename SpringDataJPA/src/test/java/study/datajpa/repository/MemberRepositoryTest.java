@@ -77,4 +77,17 @@ public class MemberRepositoryTest {
 
     }
 
+    @Test
+    public void findByUsername() {
+        Member memberA = new Member("AAA", 10);
+        Member memberB = new Member("BBB", 20);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        List<Member> result = memberRepository.findByUsername("BBB");
+
+        assertThat(result.size()).isEqualTo(1);
+
+    }
+
 }

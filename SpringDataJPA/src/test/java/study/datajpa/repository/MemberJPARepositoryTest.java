@@ -61,4 +61,17 @@ public class MemberJPARepositoryTest {
         assertThat(count2).isEqualTo(0);
     }
 
+    @Test
+    public void findByUsername() {
+        Member memberA = new Member("AAA", 10);
+        Member memberB = new Member("BBB", 20);
+        memberJPARepository.save(memberA);
+        memberJPARepository.save(memberB);
+
+        List<Member> result = memberJPARepository.findByUsername("BBB");
+
+        assertThat(result.size()).isEqualTo(1);
+
+    }
+
 }

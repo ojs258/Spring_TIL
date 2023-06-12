@@ -39,4 +39,10 @@ public class MemberJPARepository {
         return em.createQuery("select count(m) from Member m",Long.class).getSingleResult();
         // 단 건 조회 getSingleResult()
     }
+
+    public List<Member> findByUsername(String username) {
+        return em.createNamedQuery("Member.findByUsername", Member.class)
+                .setParameter("username",username)
+                .getResultList();
+    }
 }
