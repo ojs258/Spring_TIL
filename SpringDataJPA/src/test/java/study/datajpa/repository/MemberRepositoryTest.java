@@ -9,7 +9,10 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -146,10 +149,21 @@ public class MemberRepositoryTest {
         memberRepository.save(memberA);
         memberRepository.save(memberB);
 
-        List<Member> result = memberRepository.findByNames("AAA", "BBB");
+        List<Member> result = memberRepository.findByNames(Arrays.asList("AAA","BBB"));
 
         System.out.println("result = " + result);
 
     }
+    
+    @Test
+    public void findListByUsername() {
+        Member memberA = new Member("AAA", 10);
+        Member memberB = new Member("BBB", 20);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
 
+        List<Member> members = memberRepository.findListByUsername("AAA");
+        Member member = memberRepository.findMemberByUsername("AAA");
+        Optional<Member> optionalMember = memberRepository.findOptionalByUsername("AAA");
+    }
 }

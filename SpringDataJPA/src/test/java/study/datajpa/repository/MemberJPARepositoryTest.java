@@ -74,4 +74,19 @@ public class MemberJPARepositoryTest {
 
     }
 
+    @Test
+    public void findByPage() {
+        memberJPARepository.save(new Member("memberA", 10));
+        memberJPARepository.save(new Member("memberB", 10));
+        memberJPARepository.save(new Member("memberC", 10));
+        memberJPARepository.save(new Member("memberD", 10));
+        memberJPARepository.save(new Member("memberE", 10));
+
+        List<Member> members = memberJPARepository.findByPage(10, 0, 3);
+        long count = memberJPARepository.totalCount(10);
+
+        assertThat(members.size()).isEqualTo(3);
+        assertThat(count).isEqualTo(5);
+    }
+
 }
