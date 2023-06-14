@@ -1,8 +1,11 @@
 package study.datajpa.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.*;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -14,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -25,7 +29,10 @@ public class MemberRepositoryTest {
     MemberRepository memberRepository;
     @Autowired
     TeamRepository teamRepository;
-    
+    @PersistenceContext
+    EntityManager em;
+
+
     @Test
     public void testMember() throws Exception {
         //given
@@ -154,7 +161,7 @@ public class MemberRepositoryTest {
         System.out.println("result = " + result);
 
     }
-    
+
     @Test
     public void findListByUsername() {
         Member memberA = new Member("AAA", 10);
@@ -165,5 +172,100 @@ public class MemberRepositoryTest {
         List<Member> members = memberRepository.findListByUsername("AAA");
         Member member = memberRepository.findMemberByUsername("AAA");
         Optional<Member> optionalMember = memberRepository.findOptionalByUsername("AAA");
+    }
+
+    @Test
+    public void findByPage() {
+        memberRepository.save(new Member("memberA", 10));
+        memberRepository.save(new Member("memberB", 10));
+        memberRepository.save(new Member("memberC", 10));
+        memberRepository.save(new Member("memberD", 10));
+        memberRepository.save(new Member("memberE", 10));
+
+        PageRequest pageRequest = PageRequest.of(0,3, Sort.by(Sort.Direction.DESC,"username"));
+        //Pageable 인터페이스의 구현체 PageRequest
+        Slice<Member> page = memberRepository.findByAge(10, pageRequest);
+//        Page<Member> page = memberRepository.findByAgeP(10, pageRequest);
+//        Page<MemberDto> map = page.map(m -> new MemberDto(m.getId(), m.getUsername(), null));
+//        Slice<MemberDto> map = page.map(m -> new MemberDto(m.getId(), m.getUsername(), null));
+//        Page, Slice에 담아진 객체 DTO로 변환하는 법
+
+
+
+        List<Member> content = page.getContent();
+//        long totalElements = page.getTotalElements();
+
+        assertThat(content.size()).isEqualTo(3);
+//        assertThat(totalElements).isEqualTo(5);
+        assertThat(page.getNumber()).isEqualTo(0);
+//        assertThat(page.getTotalPages()).isEqualTo(2);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
+    }
+
+    @Test
+    public void bulkAgePlus() {
+        //given
+        memberRepository.save(new Member("memberA", 10));
+        memberRepository.save(new Member("memberB", 19));
+        memberRepository.save(new Member("memberC", 20));
+        memberRepository.save(new Member("memberD", 21));
+        memberRepository.save(new Member("memberE", 40));
+
+        //when
+        int resultCount = memberRepository.bulkAgePlus(20);
+        List<Member> members = memberRepository.findByUsername("memberE");
+        Member memberE = members.get(0);
+
+        //then
+        assertThat(resultCount).isEqualTo(3);
+        assertThat(memberE.getAge()).isEqualTo(41);
+    }
+
+    @Test
+    public void findMemberLazy() throws Exception {
+        //given
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member memberA = new Member("AAA", 10, teamA);
+        Member memberB = new Member("BBB", 20, teamB);
+        memberRepository.save(memberA);
+        memberRepository.save(memberB);
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> all = memberRepository.findAll();
+
+        for (Member member : all) {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("Team = " + member.getTeam());
+        }
+        //then
+    }
+    
+    @Test
+    public void queryHint(){
+        //given
+        Member memberA = memberRepository.save(new Member("memberA", 10));
+        em.flush();
+        em.clear();
+
+        //when
+        Member member = memberRepository.findReadOnlyByUsername(memberA.getUsername());
+        member.setUsername("member2");
+
+        em.flush();
+
+        //then
+    }
+
+    @Test
+    public void callCustom() {
+        List<Member> members = memberRepository.findMemberCustom();
     }
 }

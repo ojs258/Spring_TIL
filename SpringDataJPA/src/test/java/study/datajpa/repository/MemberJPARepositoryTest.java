@@ -89,4 +89,20 @@ public class MemberJPARepositoryTest {
         assertThat(count).isEqualTo(5);
     }
 
+    @Test
+    public void bulkAgePlus() {
+        //given
+        memberJPARepository.save(new Member("memberA", 10));
+        memberJPARepository.save(new Member("memberB", 19));
+        memberJPARepository.save(new Member("memberC", 20));
+        memberJPARepository.save(new Member("memberD", 21));
+        memberJPARepository.save(new Member("memberE", 40));
+
+        //when
+        int resultCount = memberJPARepository.bulkAgePlus(20);
+
+        //then
+        assertThat(resultCount).isEqualTo(3);
+    }
+
 }
