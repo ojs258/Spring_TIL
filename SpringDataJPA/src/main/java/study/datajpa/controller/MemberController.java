@@ -41,11 +41,11 @@ public class MemberController {
 //        memberRepository.save(new Member("userA"));
 //    }
 
-    @PostConstruct
-    public void init2() {
-        for (int i = 0; i < 100; i++) {
-            memberRepository.save(new Member("member"+i, i));
-        }
-    }
+//    @PostConstruct
+//    public void init2() {
+//        for (int i = 0; i < 100; i++) {
+//            memberRepository.save(new Member("member"+i, i));
+//        }
+//    }
 
 }
