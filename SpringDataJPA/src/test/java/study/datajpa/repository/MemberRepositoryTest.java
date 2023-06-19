@@ -291,4 +291,33 @@ public class MemberRepositoryTest {
         //then
         assertThat(result.size()).isEqualTo(1);
     }
+
+    @Test
+    public void queryByExample() throws Exception {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member member1 = new Member("m1", 0, teamA);
+        Member member2 = new Member("m2", 0, teamA);
+        em.persist(member1);
+        em.persist(member2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        Member member = new Member("m1");
+        member.setTeam(teamA);
+
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("age");
+
+        Example<Member> example = Example.of(member, matcher);
+
+        List<Member> result = memberRepository.findAll(example);
+
+        //then
+        assertThat(result.get(0).getUsername()).isEqualTo("m1");
+        assertThat(result.size()).isEqualTo(1);
+    }
 }
