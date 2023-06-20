@@ -59,4 +59,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     @Override
     List<Member> findMemberCustom();
+
+    List<UsernameOnly> findProjectionsByUsername(@Param("username") String username);
 }
