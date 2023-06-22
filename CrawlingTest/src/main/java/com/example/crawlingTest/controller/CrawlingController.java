@@ -3,7 +3,6 @@ package com.example.crawlingTest.controller;
 import com.example.crawlingTest.crawling.CrawlingService;
 import com.example.crawlingTest.crawling.JsoupCrawlingServiceImpl;
 import com.example.crawlingTest.crawling.NaverRecentCrawlingServiceImpl;
-import com.example.crawlingTest.crawling.NaverSubsCrawlingServiceImpl;
 
 import java.util.List;
 import java.util.regex.Matcher;
