@@ -45,7 +45,5 @@ class MemberTest {
             System.out.println("member = " + member);
             System.out.println(" -> member.team = " + member.getTeam());
         }
-
     }
-
 }
