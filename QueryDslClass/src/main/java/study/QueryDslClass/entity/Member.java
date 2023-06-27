@@ -18,6 +18,12 @@ public class Member {
     @ManyToOne(fetch = FetchType.LAZY)
     private Team team;
 
+    public Member(String username) {
+        this.id = id;
+        this.username = username;
+        this.age = age;
+    }
+
     public Member(String username, int age) {
         this.id = id;
         this.username = username;

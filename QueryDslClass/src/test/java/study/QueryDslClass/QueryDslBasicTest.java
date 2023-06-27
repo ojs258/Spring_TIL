@@ -2,18 +2,25 @@ package study.QueryDslClass;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.QueryDslClass.entity.Member;
+import study.QueryDslClass.entity.QMember;
 import study.QueryDslClass.entity.Team;
 
 import java.util.List;
 
+import static com.querydsl.jpa.JPAExpressions.select;
 import static org.assertj.core.api.Assertions.assertThat;
 import static study.QueryDslClass.entity.QMember.member;
 import static study.QueryDslClass.entity.QTeam.team;
@@ -182,5 +189,213 @@ public class QueryDslBasicTest {
         assertThat(teamA.get(member.age.avg())).isEqualTo(15);
         assertThat(teamB.get(team.name)).isEqualTo("teamB");
         assertThat(teamB.get(member.age.avg())).isEqualTo(35);
+    }
+
+    // teamA에 소속된 모든 회원.
+    @Test
+    public void join() throws Exception {
+        List<Member> result = query.selectFrom(member)
+                .join(member.team, team)
+                .where(team.name.eq("teamA"))
+                .fetch();
+
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result).extracting("username")
+                .containsExactly("member1", "member2");
+    }
+    // 회원의 이름이 팀이름과 같은 회원을 조회
+    @Test
+    public void theta_join() throws Exception {
+        em.persist(new Member("teamA"));
+        em.persist(new Member("teamB"));
+
+        List<Member> result = query
+                .select(member)
+                .from(member, team)
+                .where(member.username.eq(team.name))
+                .fetch();
+
+        assertThat(result).extracting("username")
+                .containsExactly("teamA", "teamB");
+    }
+
+    // 회원과 팀을 조인하면서, 팀이름이 teamA인 팀만 조인 회원은 모두 조회
+    @Test
+    public void join_on_filtering() throws Exception {
+        List<Tuple> result = query.select(member, team)
+                .from(member)
+                .leftJoin(member.team, team)
+                .on(team.name.eq("teamA"))
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("tuple = " + tuple);
+        }
+    }
+
+    // 연관관계 없는 외부조인
+    // 회원의 이름이 팀이름과 같은 대상을 외부 조인
+    @Test
+    @Rollback(value = false)
+    public void join_on_noRelationship() throws Exception {
+        em.persist(new Member("teamA"));
+        em.persist(new Member("teamB"));
+        em.persist(new Member("teamC"));
+
+        List<Tuple> result = query
+                .select(member,team)
+                .from(member)
+                .leftJoin(team)
+                .on(member.username.eq(team.name))
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("tuple = " + tuple);
+        }
+    }
+
+    @PersistenceUnit
+    EntityManagerFactory emf;
+
+    @Test
+    public void noFetchJoin() throws Exception {
+        em.flush();
+        em.clear();
+
+        Member result = query.selectFrom(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        boolean loaded = emf.getPersistenceUnitUtil().isLoaded(result.getTeam());
+        assertThat(loaded).isFalse();
+    }
+
+    @Test
+    public void useFetchJoin() throws Exception {
+        em.flush();
+        em.clear();
+
+
+        Member result1 = query.selectFrom(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        Member result2 = query.selectFrom(member)
+                .join(member.team, team).fetchJoin()
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        boolean loaded = emf.getPersistenceUnitUtil().isLoaded(result2.getTeam());
+        assertThat(loaded).isTrue();
+
+        System.out.println("result1 = " + result1);
+        System.out.println("result1 = " + result2);
+    }
+
+    @Test
+    public void teamTest() throws Exception {
+        List<Team> result = query.selectFrom(team)
+                .fetch();
+        for (Team team1 : result) {
+            System.out.println(team1);
+        }
+    }
+
+    // 나이가 가장 많은 회원을 조회
+    QMember memberSub = new QMember("memberSub");
+    @Test
+    public void subQuery() throws Exception {
+        List<Member> result = query.selectFrom(member)
+                .where(member.age.eq(select(memberSub.age.max())
+                        .from(memberSub)
+
+                )).fetch();
+
+        assertThat(result).extracting("age")
+                .containsExactly(40);
+    }
+
+    @Test
+    public void subQueryGoe() throws Exception {
+        List<Member> result = query.selectFrom(member)
+                .where(member.age.goe(select(memberSub.age.avg())
+                        .from(memberSub)
+
+                )).fetch();
+
+        assertThat(result).extracting("age")
+                .containsExactly(30, 40);
+    }
+
+    @Test
+    public void subQueryIn() throws Exception {
+        List<Member> result = query.selectFrom(member)
+                .where(member.age.in(select(memberSub.age)
+                        .from(memberSub)
+                        .where(memberSub.age.gt(10))
+                )).fetch();
+
+        assertThat(result).extracting("age")
+                .containsExactly(20, 30, 40);
+    }
+
+    @Test
+    public void selectSubQuery() throws Exception {
+        List<Tuple> result = query.select(member.username,
+                        select(memberSub.age.avg())
+                                .from(memberSub))
+                .from(member)
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("tuple = " + tuple);
+        }
+    }
+
+    @Test
+    public void basicCase() throws Exception {
+        List<String> result = query.select(member.age
+                        .when(10).then("열살")
+                        .when(20).then("스무살")
+                        .otherwise("기타"))
+                .from(member)
+                .fetch();
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+    }
+    @Test
+    public void complexCase() throws Exception {
+        List<String> result = query.select(new CaseBuilder()
+                        .when(member.age.between(0, 25)).then("학생")
+                        .when(member.age.between(26, 40)).then("성인")
+                        .otherwise("노인"))
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("member = " + s);
+        }
+    }
+    
+    @Test
+    public void constant() throws Exception {
+        List<Tuple> result = query.select(member.username, Expressions.constant("A"))
+                .from(member)
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("tuple = " + tuple);
+        }
+    }
+
+    @Test
+    public void concat() throws Exception {
+        String result = query.select(member.username.concat("_").concat(member.age.stringValue()))
+                .from(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        assertThat(result).isEqualTo("member1_10");
     }
 }
