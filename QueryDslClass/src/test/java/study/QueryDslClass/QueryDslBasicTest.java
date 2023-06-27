@@ -2,8 +2,11 @@ package study.QueryDslClass;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -12,8 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.QueryDslClass.DTO.MemberDto;
+import study.QueryDslClass.DTO.QUserDto;
+import study.QueryDslClass.DTO.UserDto;
 import study.QueryDslClass.entity.Member;
 import study.QueryDslClass.entity.QMember;
 import study.QueryDslClass.entity.Team;
@@ -236,7 +241,6 @@ public class QueryDslBasicTest {
     // 연관관계 없는 외부조인
     // 회원의 이름이 팀이름과 같은 대상을 외부 조인
     @Test
-    @Rollback(value = false)
     public void join_on_noRelationship() throws Exception {
         em.persist(new Member("teamA"));
         em.persist(new Member("teamB"));
@@ -267,6 +271,7 @@ public class QueryDslBasicTest {
                 .fetchOne();
 
         boolean loaded = emf.getPersistenceUnitUtil().isLoaded(result.getTeam());
+        // LAZY로딩 상태의 연관관계에서 로딩된 연관관계 객체가 프록시 객체인지 아닌지 판별하는 부분
         assertThat(loaded).isFalse();
     }
 
@@ -397,5 +402,127 @@ public class QueryDslBasicTest {
                 .fetchOne();
 
         assertThat(result).isEqualTo("member1_10");
+    }
+    @Test
+    public void simpleProjection() throws Exception {
+        List<String> result = query.select(member.username)
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+    }
+
+    @Test
+    public void tupleProjection() throws Exception {
+        List<Tuple> result = query.select(member.username, member.age)
+                .from(member)
+                .fetch();
+        for (Tuple tuple : result) {
+            String name = tuple.get(member.username);
+            Integer age = tuple.get(member.age);
+            System.out.println("name = "+ name+" age = "+age);
+        }
+    }
+
+    @Test
+    public void dtoJPQL() throws Exception {
+        List<MemberDto> results = em.createQuery("select new study.QueryDslClass.DTO.MemberDTO(m.username, m.age) from Member m", MemberDto.class)
+                .getResultList();
+
+        for (Object result : results) {
+            System.out.println("result = " + result);
+        }
+    }
+
+    @Test // Getter Setter를 이용하는 방식
+    public void dtoQuerydslBySetter() throws Exception {
+        List<MemberDto> result = query
+                .select(Projections
+                        .bean(MemberDto.class,
+                                member.username,
+                                member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDTO = " + memberDto);
+        }
+    }
+
+    @Test // DTO 객체의 필드에 바로 데이터를 넣어서 변환해주는 방식
+    public void dtoQuerydslByField() throws Exception {
+        List<MemberDto> result = query
+                .select(Projections
+                        .fields(MemberDto.class,
+                                member.username,
+                                member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDTO = " + memberDto);
+        }
+    }
+
+    @Test // DTO 객체의 기본 생성자를 이용한 방식
+    // 기본 생성자의 파라미터 순서대로 들어가야 한다.
+    public void dtoQuerydslByConstructor() throws Exception {
+        List<MemberDto> result = query
+                .select(Projections
+                        .constructor(MemberDto.class,
+                                member.username,
+                                member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDto = " + memberDto);
+        }
+    }
+
+    @Test // 서로 다른 필드명을 as 기능을 통해 맞춰주는 방식
+    public void userDtoQuerydsl() throws Exception {
+        List<UserDto> result = query
+                .select(Projections
+                        .fields(UserDto.class,
+                                member.username.as("name"),
+                                ExpressionUtils.as(JPAExpressions
+                                        .select(memberSub.age.max())
+                                        .from(memberSub),"age")))
+                .from(member)
+                .fetch();
+
+        for (UserDto userDto : result) {
+            System.out.println("userDto = " + userDto);
+        }
+    }
+
+    @Test // DTO 객체의 기본 생성자를 이용한 방식 By UserDto
+    public void userDtoQuerydslByConstructor() throws Exception {
+        List<UserDto> result = query
+                .select(Projections
+                        .constructor(UserDto.class,
+                                member.username,
+                                member.age))
+                .from(member)
+                .fetch();
+
+        for (UserDto userDto : result) {
+            System.out.println("userDto = " + userDto);
+        }
+    }
+
+
+    @Test
+    public void DtoQuerydslByProjection() throws Exception {
+        List<UserDto> result = query.select(new QUserDto(member.username, member.age))
+                .from(member)
+                .fetch();
+
+        for (UserDto userDto : result) {
+            System.out.println("memberDto = " + userDto);
+        }
     }
 }
