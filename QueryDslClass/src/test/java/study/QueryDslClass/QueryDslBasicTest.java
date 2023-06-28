@@ -1,9 +1,12 @@
 package study.QueryDslClass;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -428,7 +431,7 @@ public class QueryDslBasicTest {
 
     @Test
     public void dtoJPQL() throws Exception {
-        List<MemberDto> results = em.createQuery("select new study.QueryDslClass.DTO.MemberDTO(m.username, m.age) from Member m", MemberDto.class)
+        List<MemberDto> results = em.createQuery("select new study.QueryDslClass.DTO.MemberDto(m.username, m.age) from Member m", MemberDto.class)
                 .getResultList();
 
         for (Object result : results) {
@@ -523,6 +526,113 @@ public class QueryDslBasicTest {
 
         for (UserDto userDto : result) {
             System.out.println("memberDto = " + userDto);
+        }
+    }
+
+    @Test
+    public void dynamicQueryByBooleanBuilder() throws Exception {
+        String username = "member1";
+        Integer age = 10;
+
+        List<Member> findMember = searchMember1(username, age);
+
+        assertThat(findMember.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember1(String username, Integer age) {
+        BooleanBuilder builder = new BooleanBuilder();
+        if (username != null) {
+            builder.and(member.username.eq(username));
+        }
+        if (age != null) {
+            builder.and(member.age.eq(age));
+        }
+        List<Member> result = query.selectFrom(member)
+                .where(builder)
+                .fetch();
+
+        return result;
+
+    }
+
+    @Test
+    public void dynamicQueryByWhereParam() throws Exception {
+        String username = "member1";
+        Integer age = null;
+
+        List<Member> findMember = searchMember2(username, age);
+
+        assertThat(findMember.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember2(String username, Integer age) {
+        return query.selectFrom(member)
+                .where(allEq(username,age))
+                .fetch();
+    }
+
+    private BooleanExpression usernameEq(String username) {
+        return username != null ? member.username.eq(username) : null;
+    }
+
+    private BooleanExpression ageEq(Integer age) {
+        return age != null ? member.age.eq(age) : null;
+    }
+
+    private Predicate allEq(String username, Integer age) {
+        return usernameEq(username).and(ageEq(age));
+    }
+
+    @Test
+    public void bulkUpdate() throws Exception {
+        long count = query.update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+        em.flush();
+        em.clear();
+    }
+
+    @Test
+    public void bulkAdd() throws Exception {
+        long count = query.update(member)
+                .set(member.age, member.age.add(1))
+                .execute();
+        em.flush();
+        em.clear();
+    }
+
+    @Test
+    public void bulkDelete() throws Exception {
+        long count = query.delete(member)
+                .where(member.age.gt(18))
+                .execute();
+    }
+    
+    @Test
+    public void sqlFunction() throws Exception {
+        List<String> result = query.select(
+                        Expressions.stringTemplate("function('replace', {0}, {1}, {2})",
+                                member.username, "member", "M"))
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+    }
+
+    @Test
+    public void sqlFunction2() throws Exception {
+        List<String> result = query.select(member.username)
+                .from(member)
+//                .where(member.username.eq(
+//                        Expressions.stringTemplate("function('lower', {0})", member.username)))
+                .where(member.username.eq(member.username.lower()))
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
         }
     }
 }
