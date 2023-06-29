@@ -1,19 +1,19 @@
-package study.QueryDslClass.DTO;
+package study.QueryDslClass.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-public class UserDto {
+@NoArgsConstructor()
+public class MemberDto {
 
-    private String name;
+    private String username;
     private int age;
 
     @QueryProjection
-    public UserDto(String name, int age) {
-        this.name = name;
+    public MemberDto(String username, int age) {
+        this.username = username;
         this.age = age;
     }
 }
