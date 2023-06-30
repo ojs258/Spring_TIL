@@ -42,7 +42,6 @@ public class QueryDslBasicTest {
     JPAQueryFactory query;
 
 
-
     @BeforeEach
     public void before() {
         query = new JPAQueryFactory(em);
@@ -431,7 +430,7 @@ public class QueryDslBasicTest {
 
     @Test
     public void dtoJPQL() throws Exception {
-        List<MemberDto> results = em.createQuery("select new study.QueryDslClass.DTO.MemberDto(m.username, m.age) from Member m", MemberDto.class)
+        List<MemberDto> results = em.createQuery("select new study.QueryDslClass.dto.MemberDto(m.username, m.age) from Member m", MemberDto.class)
                 .getResultList();
 
         for (Object result : results) {
