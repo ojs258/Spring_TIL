@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import static org.springframework.util.StringUtils.*;
 import static study.QueryDslClass.entity.QMember.member;
-import static study.QueryDslClass.entity.QTeam.*;
+import static study.QueryDslClass.entity.QTeam.team;
 
 @Repository
 @RequiredArgsConstructor
@@ -108,7 +108,7 @@ public class MemberJpaRepository {
         return ageGoe == null ? null : member.age.goe(ageGoe);
     }
     private BooleanExpression ageLoe(Integer ageLoe) {
-        return ageLoe == null ? null : member.age.goe(ageLoe);
+        return ageLoe == null ? null : member.age.loe(ageLoe);
     }
 
 }
