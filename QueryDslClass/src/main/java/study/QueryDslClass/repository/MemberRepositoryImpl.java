@@ -12,7 +12,6 @@ import org.springframework.data.support.PageableExecutionUtils;
 import study.QueryDslClass.dto.MemberSearchCondition;
 import study.QueryDslClass.dto.MemberTeamDto;
 import study.QueryDslClass.dto.QMemberTeamDto;
-import study.QueryDslClass.entity.Member;
 
 import java.util.List;
 
@@ -21,12 +20,37 @@ import static study.QueryDslClass.entity.QMember.member;
 import static study.QueryDslClass.entity.QTeam.team;
 
 @RequiredArgsConstructor
-public class MemberRepositoryImpl implements MemberRepositoryCustom{
+public class MemberRepositoryImpl /*extends QuerydslRepositorySupport*/ implements MemberRepositoryCustom{
 // 이름은 규칙이 정해져있다.
+
+/*
+    public MemberRepositoryImpl(Class<?> domainClass) {
+        super(domainClass);
+    }
+    아래의 *1 *2 *3 주석의 내용을 가능하게 해주는 QuerydslRepositorySupport 객체와 해당 객체에서 상속받아 구현되는 생성자
+*/
     private final JPAQueryFactory queryFactory;
 
     @Override
     public List<MemberTeamDto> search(MemberSearchCondition condition) {
+
+/*  *1 아래 쿼리 코딩을 EntityManage와 QueryFactory선언 및 주입 없이 사용하게 해주는 것.
+        from(member)
+                .leftJoin(member.team, team)
+                .where(usernameEq(condition.getUsername()),
+                        teamNameEq(condition.getTeamName()),
+                        ageGoe(condition.getAgeGoe()),
+                        ageLoe(condition.getAgeLoe()))
+                .select(new QMemberTeamDto(
+                        member.id,
+                        member.username,
+                        member.age,
+                        team.id,
+                        team.name
+                ))
+                .fetch();
+ */
+
         return queryFactory
                 .select(new QMemberTeamDto(
                         member.id,
@@ -88,13 +112,34 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+/*  *2 페이징 쿼리에서 Pageable을 적용하는 쿼리와 컨텐츠 로직을 분리해서 적용하는
+        getQuerydsl().applyPagination(), getQuerydsl().applySorting도 제공한다.
+        하지만 Sorting은 정상적으로 작동하지 않는다. 아예 매장당한 기능인듯?
 
-        JPAQuery<Member> countQuery = queryFactory.selectFrom(member)
+        JPQLQuery<MemberTeamDto> jpqlQuery = from(member)
+                .leftJoin(member.team, team)
+                .where(usernameEq(condition.getUsername()),
+                        teamNameEq(condition.getTeamName()),
+                        ageGoe(condition.getAgeGoe()),
+                        ageLoe(condition.getAgeLoe()))
+                .select(new QMemberTeamDto(
+                        member.id,
+                        member.username,
+                        member.age,
+                        team.id,
+                        team.name ));
+
+        JPQLQuery<MemberTeamDto> contentV2= getQuerydsl().applyPagination(pageable, jpqlQuery);
+*/
+        JPAQuery<Long> countQuery = queryFactory
+                .select(member.count())
+                .from(member)
                 .leftJoin(member.team, team)
                 .where(usernameEq(condition.getUsername()),
                         teamNameEq(condition.getTeamName()),
                         ageGoe(condition.getAgeGoe()),
                         ageLoe(condition.getAgeLoe()));
+
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
         // PageableExecutionUtils의 기능으로 세개의 조건에 따라 Count쿼리를 최적화 해준다.
@@ -102,6 +147,11 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
         // 2. 남은 컨텐츠가 있고 한 페이지의 사이즈보다 남은 컨텐츠가 적은 경우(마지막 페이지인 경우) -> 쿼리X, offset + 남은 컨텐츠 개수
         // 3. 나머지 경우 -> 쿼리 O
         // offset = pageSize * 현재 페이지 넘버 = 이미 이전 페이지에 출력했거나 스킵한 페이지에 포함된 항목 수
+
+
+
+
+
     }
 
     private BooleanExpression usernameEq(String username) {
