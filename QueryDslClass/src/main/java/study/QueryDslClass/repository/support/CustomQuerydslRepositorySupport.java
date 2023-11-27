@@ -72,7 +72,7 @@ public abstract class CustomQuerydslRepositorySupport {
         return PageableExecutionUtils.getPage(content, pageable,
                 jpaQuery::fetchCount);
     }
-    protected <T> Page<T> applyPagination(Pageable pageable,
+    protected <T> Page<T> applyPaginationAndCounting(Pageable pageable,
                                           Function<JPAQueryFactory, JPAQuery> contentQuery, Function<JPAQueryFactory,
             JPAQuery> countQuery) {
         JPAQuery jpaContentQuery = contentQuery.apply(getQueryFactory());

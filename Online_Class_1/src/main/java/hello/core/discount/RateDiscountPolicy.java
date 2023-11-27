@@ -1,14 +1,12 @@
 package hello.core.discount;
 
-import hello.core.annotaion.MainDicountPolicy;
+import hello.core.annotaion.MainDiscountPolicy;
 import hello.core.member.Grade;
 import hello.core.member.Member;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Component
-@MainDicountPolicy
+@MainDiscountPolicy
 //@Qualifier("mainDiscountPolicy")
 //@Primary
 public class RateDiscountPolicy implements DiscountPolicy{
@@ -21,6 +19,5 @@ public class RateDiscountPolicy implements DiscountPolicy{
         }else{
             return 0;
         }
-
     }
 }

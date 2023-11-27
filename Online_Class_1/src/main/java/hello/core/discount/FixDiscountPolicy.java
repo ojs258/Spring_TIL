@@ -17,7 +17,7 @@ public class FixDiscountPolicy implements DiscountPolicy{
     public int discount(Member member, int price) {
         //EnumType을 밸류로 비교할 때는 "=="로 비교한다.
         if (member.getGrade() == Grade.VIP) {
-            return discountFixAmount;
+            return price - discountFixAmount;
         } else{
             return 0;
         }

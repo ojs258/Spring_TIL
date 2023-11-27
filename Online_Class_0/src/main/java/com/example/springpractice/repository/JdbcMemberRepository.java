@@ -24,6 +24,7 @@ public class JdbcMemberRepository implements MemberRepository {
                     Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, member.getName());
             pstmt.executeUpdate();
+
             rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
                 member.setId(rs.getLong(1));

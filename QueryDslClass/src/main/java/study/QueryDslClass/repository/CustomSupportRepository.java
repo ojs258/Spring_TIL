@@ -10,15 +10,14 @@ import study.QueryDslClass.repository.support.CustomQuerydslRepositorySupport;
 
 import java.util.List;
 
-import static org.springframework.util.StringUtils.isEmpty;
 import static study.QueryDslClass.entity.QMember.member;
 import static study.QueryDslClass.entity.QTeam.team;
 
 @Repository
 public class CustomSupportRepository extends CustomQuerydslRepositorySupport {
 
-    public CustomSupportRepository(Class<?> domainClass) {
-        super(domainClass);
+    public CustomSupportRepository() {
+        super(Member.class);
     }
 
     public List<Member> basicSelect() {
@@ -32,7 +31,7 @@ public class CustomSupportRepository extends CustomQuerydslRepositorySupport {
     }
     public Page<Member> searchPageByApplyPagination(MemberSearchCondition condition, Pageable pageable) {
 
-        return applyPagination(pageable,
+        return applyPaginationAndCounting(pageable,
                 contentQuery -> selectFrom(member)
                     .leftJoin(member.team,team)
                     .where(usernameEq(condition.getUsername()),
@@ -48,10 +47,10 @@ public class CustomSupportRepository extends CustomQuerydslRepositorySupport {
     }
 
     private BooleanExpression usernameEq(String username) {
-        return isEmpty(username) ? null : member.username.eq(username);
+        return username.isEmpty()? null : member.username.eq(username);
     }
     private BooleanExpression teamNameEq(String teamName) {
-        return isEmpty(teamName) ? null : team.name.eq(teamName);
+        return teamName.isEmpty() ? null : team.name.eq(teamName);
     }
     private BooleanExpression ageGoe(Integer ageGoe) {
         return ageGoe == null ? null : member.age.goe(ageGoe);
