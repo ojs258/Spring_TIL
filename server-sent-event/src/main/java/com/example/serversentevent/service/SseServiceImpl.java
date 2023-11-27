@@ -13,7 +13,7 @@ import java.util.Optional;
 public class SseServiceImpl implements SseService{
     private final SseRepository sseRepository;
     @Override
-    public String findStageOpen(Long num) {
+    public String findStageOpen(Integer num) {
         return sseRepository.find(num)
                 .orElseThrow(() -> new NoSuchElementException("찾을 수 없습니다."));
     }

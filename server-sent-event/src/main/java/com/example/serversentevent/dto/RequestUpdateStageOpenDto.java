@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class RequestUpdateStageOpenDto {
-    private Long num;
+    private Integer num;
     private String str;
 }
